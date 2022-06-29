@@ -1,0 +1,79 @@
+---
+// stylesheets
+import '@unocss/reset/antfu.css'
+import '../styles/prose.css'
+import '../styles/uno.css'
+// gumori config
+import { site } from '../config/gumori'
+// material-theme-color
+import { join } from 'path'
+import { readFile } from 'fs/promises'
+import { fileTypeFromBuffer } from 'file-type'
+import { themeFromSourceColor } from '@material/material-color-utilities'
+import { sourceColorFromLoadImage, cssFromTheme } from '../scripts/m3-utils'
+
+const { page, post } = Astro.props
+
+const title = page
+	? page.url.current === '/'
+		? site.title
+		: `${page.url.current} - ${site.title}`
+	: `${post.frontmatter.title ?? post.frontmatter.path} - ${site.title}`
+const description = page ? site.description : post.frontmatter.summary
+const permalink = site.url + (page ? page.url.current : post.frontmatter.path)
+
+// Theme fallback: Photo > Banner Photo (Background Photo in Future) > ThemeColor
+
+const theme = cssFromTheme(
+	themeFromSourceColor(post?.frontmatter.photo
+		? await (async () => {
+			const photo = post.frontmatter.photo.startsWith('https://')
+				? await fetch(post.frontmatter.photo)
+					.then(res => res.ok ? res.blob() : Promise.reject(res))
+					.then(async (blob) => await blob.arrayBuffer())
+					.then(Buffer.from)
+					.catch(console.error)
+				: await readFile(new URL(join(import.meta.env.DEV ? '../../public' : '../public', post.frontmatter.photo), import.meta.url))
+			const type = Buffer.isBuffer(photo) && await fileTypeFromBuffer(photo)
+			// currently node-canvas only supports png and jpeg 
+			if (['image/png', 'image/jpeg'].includes(type?.mime))
+				return await sourceColorFromLoadImage(photo as Buffer)
+			else
+				return 4284955319 // Material Deep Purple
+		})()
+		: 4284955319 // Material Deep Purple
+	)
+)
+
+---
+
+<!-- Global Metadata -->
+<meta charset="utf-8" />
+<meta name="generator" content="gh:importantimport/gumori-you" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="icon" type="image/png" href="/favicon.png" />
+<link rel="alternate" type="application/rss+xml" href="/rss.xml" />
+<link rel="sitemap" type="application/xml" href="/sitemap.xml" />
+
+<!-- Primary Meta Tags -->
+<title>{title}</title>
+<meta name="title" content={title} />
+<meta name="description" content={description} />
+
+<!-- Open Graph / Facebook -->
+<meta property="og:type" content={page ? 'website' : 'article' } />
+<meta property="og:url" content={permalink} />
+<meta property="og:title" content={title} />
+<meta property="og:description" content={description} />
+
+<!-- Photo -->
+{post?.frontmatter?.photo && (
+<meta property="og:image" content={post.frontmatter.photo} />
+<meta property="twitter:card" content="summary_large_image" />
+)}
+
+<!-- Theme -->
+<style set:text={theme} />
+
+<!-- PWA -->
+<script src="/src/scripts/pwa.ts"></script>
