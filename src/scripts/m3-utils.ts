@@ -1,10 +1,11 @@
+import type { Theme } from '@material/material-color-utilities'
 import { QuantizerCelebi, Score, argbFromRgb, themeFromSourceColor } from '@material/material-color-utilities'
 import { createCanvas, loadImage } from 'canvas'
 
 /**
  * Get the source color from an image.
  *
- * @param src The image element
+ * @param src The canvas.loadImage() source
  * @param options The canvas.loadImage() options
  * @return Source color - the color most suitable for creating a UI theme
  */
@@ -39,18 +40,18 @@ export const sourceColorFromLoadImage = async (src: string | Buffer, options?: a
 }
 
 /**
- * Generate a theme from an image source
+ * Generate a theme from an image.
  *
- * @param src The image element
+ * @param src The canvas.loadImage() source
  * @param options The canvas.loadImage() options
  * @return Theme object
  */
-export const themeFromLoadImage = async (src: string | Buffer, options?: any) =>
-  await sourceColorFromLoadImage(src, options).then(async color => await themeFromSourceColor(color))
+export const themeFromLoadImage = async (src: string | Buffer, options?: any): Promise<Theme> =>
+  await sourceColorFromLoadImage(src, options).then(color => themeFromSourceColor(color))
 
-export const toSnakeCase = (string: string) => string.replace(/([A-Z]+)/g, '-$1').toLowerCase()
+export const toSnakeCase = (string: string): string => string.replace(/([A-Z]+)/g, '-$1').toLowerCase()
 
-export const rgbFromArgb = (argb: number) => [(argb >> 16) & 255, (argb >> 8) & 255, argb & 255]
+export const rgbFromArgb = (argb: number): [number, number, number] => [(argb >> 16) & 255, (argb >> 8) & 255, argb & 255]
 
 export type CSSFromThemeOptions = {
   prefix?: string
@@ -58,18 +59,25 @@ export type CSSFromThemeOptions = {
   target?: string
 }
 
+/**
+ * Generate a stylesheets from an theme.
+ *
+ * @param theme Theme object
+ * @param options Options
+ * @returns Stylesheets
+ */
 export const cssFromTheme = (
-  theme: any,
+  theme: Theme,
   options: CSSFromThemeOptions = { prefix: 'md-sys-color-', dark: 'media', target: ':root' }
-) =>
+): string =>
   Object.entries(theme.schemes)
     .map(
-      ([scheme, value]: [string, any]) =>
-        (options.dark === 'media' ? `@media (prefers-color-scheme: ${scheme}) {${options.target} {` : `${options.target} {`) +
-        Object.entries(value.props)
+      ([name, scheme]) =>
+        (options.dark === 'media' ? `@media (prefers-color-scheme: ${name}}) {${options.target} {` : `${options.target} {`) +
+        Object.entries(scheme.toJSON())
           .map(
-            ([key, value]: [string, number]) =>
-              `--${options.prefix}${toSnakeCase(key)}${options.dark === 'suffix' ? `-${scheme}` : ''}:${rgbFromArgb(value).join(
+            ([key, value]) =>
+              `--${options.prefix}${toSnakeCase(key)}${options.dark === 'suffix' ? `-${name}` : ''}:${rgbFromArgb(value).join(
                 ','
               )};`
           )
