@@ -36,3 +36,8 @@ export const theme = {
     full: '8964rem'
   }
 }
+
+export const shortcuts = {
+  'h-entry': 'bg-surfacevariant text-onsurfacevariant rounded-md p-4',
+  'u-featured': 'rounded-sm w-full h-60 md:h-72 object-center object-cover'
+}
