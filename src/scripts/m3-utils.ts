@@ -73,7 +73,7 @@ export const cssFromTheme = (
   Object.entries(theme.schemes)
     .map(
       ([name, scheme]) =>
-        (options.dark === 'media' ? `@media (prefers-color-scheme: ${name}}) {${options.target} {` : `${options.target} {`) +
+        (options.dark === 'media' ? `@media (prefers-color-scheme: ${name}) {${options.target} {` : `${options.target} {`) +
         Object.entries(scheme.toJSON())
           .map(
             ([key, value]) =>
