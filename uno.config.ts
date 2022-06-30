@@ -1,6 +1,6 @@
 import { defineConfig, presetUno, presetTypography, presetIcons } from 'unocss'
 
-import { theme } from './src/scripts/m3'
+import { theme } from './src/scripts/m3-config'
 
 export default defineConfig({
   presets: [
