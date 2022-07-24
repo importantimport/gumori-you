@@ -2,7 +2,6 @@
 import { defineConfig } from 'astro/config'
 import sitemap from '@astrojs/sitemap'
 // vite plugins
-import { VitePWA } from 'vite-plugin-pwa'
 // remark/rehype plugins
 import remarkGfm from 'remark-gfm'
 import rehypePrettyCode from 'rehype-pretty-code'
@@ -38,6 +37,5 @@ export default defineConfig({
     ]
   },
   vite: {
-    plugins: [VitePWA()]
   }
 })
