@@ -12,33 +12,29 @@ If you're interested in contributing to **Gumori You**, pls read the following c
 
 ## 🧱 Project Structure
 
-U'll see the following folders and files:
+You'll see the following folders and files:
 
 ```bash
 /
-├── public/
-│   └── favicon.png
+├── gumori/
+│   └── elements.md # example.com/elements
 ├── src/
-│   ├── config/
-│   │   ├── gumori.ts
-│   │   └── types.ts
-│   └── posts/
-│       └── elements.md # example.com/elements
+│   └── gumori.ts # config
 └── package.json
 ```
 
-Astro looks for `.md` files in the `src/posts/` directory. Each page is exposed as a route based on its file name.
+Astro looks for `.md` files in the `gumori` directory. Each page is exposed as a route based on its filename.
 
-Any static assets, like images, can be placed in the `public/` directory.
+Also you can put any static assets (like images) in the same location!
 
 ## 🖥️ Commands
 
-| Command        | Action                                      |
-| :------------- | :------------------------------------------ |
-| `pnpm i`       | Installs dependencies                       |
-| `pnpm dev`     | Starts local dev server at `localhost:3000` |
-| `pnpm build`   | Build ur production site to `./dist/`       |
-| `pnpm preview` | Preview ur build locally, before deploying  |
+| Command        | Action                                       |
+| :------------- | :------------------------------------------- |
+| `pnpm i`       | Installs dependencies                        |
+| `pnpm dev`     | Starts local dev server at `localhost:3000`  |
+| `pnpm build`   | Build your production site to `./dist/`      |
+| `pnpm preview` | Preview your build locally, before deploying |
 
 ## 📝 License
 
