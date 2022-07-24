@@ -1,19 +1,23 @@
-import type { SiteConfig, PageConfig, NavConfig, RSSConfig, DateConfig } from './types'
-
-export const site: SiteConfig = {
+export const site: Config.Site = {
   url: import.meta.env.SITE,
   title: 'Gumori You',
   description: 'Bringing Material Design 3 to the Astro Blog.',
   keywords: ['Gumori', 'Astro', 'UnoCSS'],
-  author: 'John Doe',
+  authors: {
+    default: {
+      name: 'Jane Doe',
+      url: import.meta.env.SITE,
+      default: true
+    }
+  },
   lang: 'en'
 }
 
-export const page: PageConfig = {
+export const page: Config.Page = {
   pageSize: 5
 }
 
-export const nav: NavConfig = [
+export const nav: Config.Nav = [
   {
     text: 'Elements',
     link: '/elements'
@@ -22,15 +26,15 @@ export const nav: NavConfig = [
     text: 'RSS',
     link: '/rss.xml'
   },
-  import.meta.env.PROD && {
+  {
     text: 'Sitemap',
-    link: 'sitemap.xml'
+    link: import.meta.env.SITE + 'sitemap-0.xml'
   }
 ]
 
-export const rss: RSSConfig = {}
+export const rss: Config.RSS = {}
 
-export const date: DateConfig = {
+export const date: Config.Date = {
   locales: 'en-US',
   options: {
     year: 'numeric',

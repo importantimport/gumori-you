@@ -2,6 +2,7 @@
 import { defineConfig } from 'astro/config'
 import sitemap from '@astrojs/sitemap'
 // vite plugins
+import { Gumori } from './src/scripts/vite'
 // remark/rehype plugins
 import remarkGfm from 'remark-gfm'
 import rehypePrettyCode from 'rehype-pretty-code'
@@ -15,27 +16,23 @@ export default defineConfig({
     syntaxHighlight: false,
     remarkPlugins: [remarkGfm],
     rehypePlugins: [
+      [rehypePrettyCode, { theme: { light: 'github-light', dark: 'github-dark' } }],
+      rehypeSlug,
       [
-        rehypePrettyCode,
+        rehypeAutolinkHeadings,
         {
-          theme: { light: 'github-light', dark: 'github-dark' },
-          onVisitLine(node) {
-            if (node.children.length === 0) {
-              node.children = [{ type: 'text', value: ' ' }]
-            }
-          },
-          onVisitHighlightedLine(node) {
-            node.properties.className.push('line--highlighted')
-          },
-          onVisitHighlightedWord(node) {
-            node.properties.className = ['word']
+          behavior: 'append',
+          content: {
+            type: 'element',
+            tagName: 'span',
+            properties: { className: ['anchor-link'] },
+            children: [{ type: 'text', value: '#' }]
           }
         }
-      ],
-      rehypeSlug,
-      [rehypeAutolinkHeadings, { behavior: 'wrap' }]
+      ]
     ]
   },
   vite: {
+    plugins: [Gumori()]
   }
 })

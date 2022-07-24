@@ -1,18 +1,19 @@
 import rss from '@astrojs/rss'
-import { site, rss as rssConfig } from '../config/gumori'
+import { resolve } from 'path'
+import { site, rss as rssConfig } from '@src/gumori'
 
 export const get = () =>
   rss({
     title: site.title,
     description: site.description,
     site: site.url ?? import.meta.env.SITE,
-    items: Object.values(import.meta.globEager('../posts/**/*.md'))
+    items: Object.values(import.meta.globEager('../../gumori/**/*.md'))
       .map(post => ({
         ...post,
         frontmatter: {
           ...post.frontmatter,
-          slug: post.file.replace(/.+?\/posts(.+)/, '$1'),
-          path: post.file.replace(/.+?\/posts(.+)(index\.md|\.md)/, '$1').slice(1)
+          slug: post.file.replace(resolve('gumori'), ''),
+          path: post.file.replace(resolve('gumori'), '').replace(/(.+?)(?:\/index\.md|\.md)/, '$1').slice(1)
         }
       }))
       .filter((post, index) => !post.frontmatter.flags?.includes('unlisted') && (!rssConfig.limit || index < rssConfig.limit))

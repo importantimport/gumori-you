@@ -1,16 +1,16 @@
 ---
 // stylesheets
 import '@unocss/reset/antfu.css'
-import '../styles/prose.css'
-import '../styles/uno.css'
+import '@src/styles/prose.css'
+import '@src/styles/uno.css'
 // gumori config
-import { site } from '../config/gumori'
+import { site } from '@src/gumori'
 // material-theme-color
 import { join } from 'path'
 import { readFile } from 'fs/promises'
 import { fileTypeFromBuffer } from 'file-type'
 import { themeFromSourceColor } from '@material/material-color-utilities'
-import { sourceColorFromLoadImage, cssFromTheme } from '../scripts/m3-utils'
+import { sourceColorFromLoadImage, cssFromTheme } from '@src/scripts/m3-utils'
 
 const { page, post } = Astro.props
 
@@ -33,7 +33,7 @@ const theme = cssFromTheme(
 					.then(async (blob) => await blob.arrayBuffer())
 					.then(Buffer.from)
 					.catch(console.error)
-				: await readFile(new URL(join(import.meta.env.DEV ? '../../public' : '../public', post.frontmatter.photo), import.meta.url))
+				: await readFile(new URL(join(import.meta.env.DEV ? '../../gumori' : '../gumori', post.frontmatter.photo), import.meta.url))
 			const type = Buffer.isBuffer(photo) && await fileTypeFromBuffer(photo)
 			// currently node-canvas only supports png and jpeg 
 			if (['image/png', 'image/jpeg'].includes(type?.mime))

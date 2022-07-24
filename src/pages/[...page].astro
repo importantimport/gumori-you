@@ -1,19 +1,27 @@
 ---
-import { site, page as pageConfig } from '../config/gumori'
-
-import Head from '../components/head.astro'
-import Header from '../components/header.astro'
-import Post from '../components/post.astro'
-import PostPreview from '../components/post_preview.astro'
-import Pagination from '../components/pagination.astro'
-import Footer from '../components/footer.astro'
+import { site, page as pageConfig } from '@src/gumori'
+import { resolve } from 'path'
+import Head from '@components/head.astro'
+import Header from '@components/header.astro'
+import Page from '@components/page.astro'
+import Post from '@components/post.astro'
+import Footer from '@components/footer.astro'
 
 export const getStaticPaths = async ({ paginate }) => {
-    const posts = await Astro.glob('../posts/**/*.md')
-    const pages = paginate(posts
-        .filter(post => !post.frontmatter.flags?.includes('unlisted'))
-        .sort((a, b) => Date.parse(b.frontmatter.published ?? b.frontmatter.created) - Date.parse(a.frontmatter.published ?? a.frontmatter.created)),
-        { pageSize: pageConfig.pageSize ?? 5 })
+    const posts = await Astro.glob('../../gumori/**/*.md')
+    const pages = paginate(
+        posts
+            .filter(post => !post.frontmatter.flags?.includes('unlisted'))
+            .sort(
+                (a, b) =>
+                    Date.parse(b.frontmatter.published ?? b.frontmatter.created) -
+                    Date.parse(a.frontmatter.published ?? a.frontmatter.created)
+            ),
+        { pageSize: pageConfig.pageSize ?? 5 }
+    )
+
+    // posts.forEach(post => console.log(post.file))
+
     return [
         ...pages.map(({ params, props }) => ({
             params,
@@ -24,15 +32,23 @@ export const getStaticPaths = async ({ paginate }) => {
                         ...post,
                         frontmatter: {
                             ...post.frontmatter,
-                            slug: post.file.replace(/.+?\/posts(.+)/, '$1'),
-                            path: post.file.replace(/.+?\/posts(.+)(index\.md|\.md)/, '$1').slice(1)
+                            slug: post.file.replace(resolve('gumori'), ''),
+                            path: post.file
+                                .replace(resolve('gumori'), '')
+                                .replace(/(.+?)(?:\/index\.md|\.md)/, '$1')
+                                .slice(1)
                         }
                     }))
                 }
             }
         })),
         ...posts.map(post => ({
-            params: { page: post.file.replace(/(?:.*?\/posts)(.+?)(?:\/index\.md|\.md)/, '$1').slice(1) },
+            params: {
+                page: post.file
+                    .replace(resolve('gumori'), '')
+                    .replace(/(.+?)(?:\/index\.md|\.md)/, '$1')
+                    .slice(1)
+            },
             props: {
                 post: {
                     ...post,
@@ -47,35 +63,28 @@ export const getStaticPaths = async ({ paginate }) => {
     ]
 }
 
-const { page, post } = Astro.props;
+const { page, post } = Astro.props as {
+    page: Page
+    post: Post
+}
 
 import.meta.env.DEV && console.log(page ?? post);
 ---
 
 <html lang={site.lang ?? 'en' }>
 
-<head prefix="og: https://ogp.me/ns#">
+<head prefix='og: https://ogp.me/ns#'>
 
     <Head {page} {post} />
-
 </head>
 
-<body class="bg-background" itemscope itemtype="https://schema.org/WebPage">
-    <main class={`prose max-w-222 m-auto px-4 md:px-0 flex flex-col gap-2 ${page ? 'h-feed' : '' }`}
-        itemprop="mainEntityOfPage" itemscope itemtype={page ? 'https://schema.org/Blog'
-        : 'https://schema.org/BlogPosting' }>
+<body class={`bg-background ${page ? 'h-feed' : '' }`} itemscope itemtype="https://schema.org/WebPage">
+    <main class="prose max-w-222 m-auto px-4 md:px-0 flex flex-col gap-2" itemprop="mainEntityOfPage" itemscope
+        itemtype={page ? 'https://schema.org/Blog' : '' }>
         <Header {page} {post} />
-        {post
-        ?
-        <Post {...post} />
-        : (
-        <>
-            {page.data.map((post: astroHTML.JSX.IntrinsicAttributes) =>
-            <PostPreview {...post} />)}
-            {(page.url.prev || page.url.next) &&
-            <Pagination url={page.url} />}
-        </>
-        )}
+        {post ?
+        <Post post={post} /> :
+        <Page page={page} />}
         <Footer />
     </main>
 </body>
