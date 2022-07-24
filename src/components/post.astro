@@ -21,7 +21,7 @@ const date = frontmatter.published ?? frontmatter.created ?? false
         {frontmatter.photo && (
         <img class="u-featured" loading="lazy" src={frontmatter.photo} alt={frontmatter.alt ?? frontmatter.photo} />
         )}
-        {Content && (
+        {!preview && (
         <div class="e-content">
             <Content />
         </div>
