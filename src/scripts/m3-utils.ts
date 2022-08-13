@@ -1,5 +1,5 @@
-import type { Theme } from '@material/material-color-utilities'
-import { QuantizerCelebi, Score, argbFromRgb, themeFromSourceColor } from '@material/material-color-utilities'
+import type { Theme } from '@importantimport/material-color-utilities'
+import { QuantizerCelebi, Score, argbFromRgb, themeFromSourceColor } from '@importantimport/material-color-utilities'
 import { createCanvas, loadImage } from 'canvas'
 
 /**
